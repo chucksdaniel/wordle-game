@@ -3,7 +3,7 @@ import { useState } from "react";
 const useWordle = (solution) => {
 	const [turn, setTurn] = useState(0);
 	const [currentGuess, setCurrentGuess] = useState("");
-	const [guesses, setGuessess] = useState([]);
+	const [guesses, setGuessess] = useState([...Array(6)]);
 	const [history, setHistory] = useState(["hello", "start"]); // for the string element
 	const [isCorrect, setIsCorrect] = useState(false);
 	/**
@@ -51,7 +51,31 @@ const useWordle = (solution) => {
 	 * update the isCorrect state if the guess is correct
 	 * add one to the turn state
 	 */
-	const addNewGuess = () => {};
+	const addNewGuess = (guess) => {
+		if (currentGuess === solution) {
+			setIsCorrect(true);
+		}
+
+		/** Track the new guess and previous ones */
+		setGuessess((prevGuesses) => {
+			let newGuesses = [...prevGuesses];
+			newGuesses[turn] = guess;
+			return newGuesses;
+		});
+
+		/** Track the number of guess and history */
+		setHistory((prevHistory) => {
+			return [...prevHistory, currentGuess];
+		});
+
+		/** Increment the turn */
+		setTurn((prevTurn) => {
+			return prevTurn + 1;
+		});
+
+		/**Set the Cuurent Guess to empty string */
+		setCurrentGuess("");
+	};
 
 	/**
 	 * Handles keyup event and track current guess
@@ -59,7 +83,7 @@ const useWordle = (solution) => {
 	 */
 
 	const handleKeyup = (e) => {
-		console.log(e.key);
+		// console.log(e.key);
 
 		if (e.key === "Enter") {
 			// Only add Guess if turn is less than 5
@@ -82,8 +106,9 @@ const useWordle = (solution) => {
             and can be accessible by formatGuess function 
          */
 			const answer = formatGuess();
+			addNewGuess(answer);
 
-			console.log(answer);
+			// console.log(answer);
 		}
 
 		if (e.key === "Backspace") {
